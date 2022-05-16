@@ -10,9 +10,10 @@ FILE_NAME = f"./images/R/Version{VERSION}/"
 IS_LEARNING = True
 SAVE_MODEL = False
 LOADED_VERSION = 2
-LOADED_MODEL = f"version_{LOADED_VERSION}-episode_{EPISODE}"
 VISION_RANGE = 10
 KNOW_EXIT = True
+
+LOADED_MODEL = f"version_{LOADED_VERSION}-episode_{EPISODE}"
 
 #domain definiton
 REAL_W = 40 #in metres
