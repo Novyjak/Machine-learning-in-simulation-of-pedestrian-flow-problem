@@ -1,17 +1,19 @@
 # Machine-learning-in-simulation-of-pedestrian-flow-problem
 **Soubory:**
-learning.py - objekty, funkce a proměnné potřebné pro strojové učení
-model_base.py - funkce obsahující kód potřebný pro spuštění simulace
-visualisator.py - obsahuje funkce pro vytváření obrazů simulace
-world.py - obsahuje objekty a funkce potřebné pro simulaci mapy
-worlditems.py - obsahuje objekty potřebné při vytváření objektu ve world.py
+
+python kód:
+-   learning.py - objekty, funkce a proměnné potřebné pro strojové učení
+-   model_base.py - funkce obsahující kód potřebný pro spuštění simulace
+-   visualisator.py - obsahuje funkce pro vytváření obrazů simulace
+-   world.py - obsahuje objekty a funkce potřebné pro simulaci mapy
+-   worlditems.py - obsahuje objekty potřebné při vytváření objektu ve world.py
 
 modely - obsahují kód, který tvoří oblast a konstanty upravující chování, předáno do funkce z model_base:
  - Learn_model - tvoří křížovou oblast s východy v levo, v pravo, nahoře a dole, překážky jsou před každým východem, chodci začínají uprostřed
  - R_model - ulička s východem v pravo a překážkou před východem, chodci začínají vlevo
  - T_model - mapa ve tvaru T, východy jsou nahoře v pravo a levo, chodci začínají dole
 
- konstanty - nutné nastavit u každého modelu, mění chování modelu:
+ **konstanty** - nutné nastavit u každého modelu, mění chování modelu:
  -  VERSION - verze simulace - mění název složky, do které se budou ukládat obrazy, aby se nepřepisovali vygenerované obrazy, při změně konstant (celé číslo)
  -  EPISODE - jaká epizoda uloženého modelu má být nahrána ze složky models, při ukládání obrazu bude zaznamenáno, jaká epizoda byla využita, ve složce se stejnou verzí mohou být obrazy využívající jiných epizod uložených modelů (celé číslo)
  -  FILE_NAME - kam se mají uložit vygenerované obrazy simulace (cesta)
@@ -25,4 +27,3 @@ modely - obsahují kód, který tvoří oblast a konstanty upravující chován�
  -  cell_size - velikost jedné buňky a chodce - standard je 0.4
  -  im_width - šířka vygenerovaného obrazu
  -  hw_factor - kolikrát bude výška vygenerované obrazu menší než šířka (při hodnotě 1 je výška stejná jako šířka) -> šířka obrazu = im_width//hw_factor
- 
