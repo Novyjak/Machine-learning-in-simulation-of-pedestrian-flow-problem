@@ -11,6 +11,8 @@ IS_LEARNING = True
 SAVE_MODEL = False
 LOADED_VERSION = 2
 LOADED_MODEL = f"version_{LOADED_VERSION}-episode_{EPISODE}"
+VISION_RANGE = 10
+KNOW_EXIT = True
 
 #domain definiton
 REAL_W = 28 #in metres
@@ -69,4 +71,4 @@ w.prepare_world()
 
 # ------ Konec tvoření mapy
 
-model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, w_height, w_width,  w, im_width, hw_factor, LOADED_MODEL = None)
+model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, VISION_RANGE, KNOW_EXIT, w_height, w_width,  w, im_width, hw_factor, LOADED_MODEL = None)

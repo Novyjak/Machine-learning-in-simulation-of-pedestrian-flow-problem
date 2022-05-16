@@ -2,8 +2,6 @@ from world import *
 from worlditems import *
 from visualisator import *
 import random
-import matplotlib.pyplot as plt
-from matplotlib import cm, colors
 import learning as lern
 import os
 
@@ -19,7 +17,7 @@ def init_condition(condition, w_height, w_width, cell_size, rho = 2, random_seed
     print(len(data))
     return data
 
-def model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, w_height, w_width,  w, im_width, hw_factor, LOADED_MODEL = None):
+def model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, VISION_RANGE, KNOW_EXIT, w_height, w_width,  w, im_width, hw_factor, LOADED_MODEL = None):
     isExist = os.path.exists(FILE_NAME)
     if not isExist:
         # Create a new directory because it does not exist 
@@ -28,7 +26,7 @@ def model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, w_heigh
     # Přidaný kód #####################################
     # Mapa ze které se budou vytahovat data pro učení.
     # Vytvoří bázi s boundaries, které se nemění.
-    learning_map = lern.LearningMap(w_width, w_height)
+    learning_map = lern.LearningMap(w_width, w_height, VISION_RANGE, KNOW_EXIT)
     for boundary in w._boundary:
         learning_map.add_boundary(boundary.x, boundary.y, boundary.btype)
     for hole in w._holes:
@@ -99,7 +97,7 @@ def model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, w_heigh
                 print("end")
                 break
             w.remove_pedestrians()
-            w.add_pedestrians(ped_init_data)
+            w.add_pedestrians(w.ped_init_data)
             learning_map.reset_map()
             print("added pedestrians")
 

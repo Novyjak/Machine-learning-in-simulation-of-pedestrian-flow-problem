@@ -1,17 +1,18 @@
 from world import *
 from worlditems import *
 from visualisator import *
-import random
-import matplotlib.pyplot as plt
-from matplotlib import cm, colors
-import learning as lern
-import os
+from model_base import *
 
 
-VERSION = 2
+VERSION = 3
+EPISODE = 2
 FILE_NAME = f"./images/Learning/Version{VERSION}/"
 IS_LEARNING = True
-LOADED_MODEL = "version_3-episode_2"
+SAVE_MODEL = False
+LOADED_VERSION = 3
+LOADED_MODEL = f"version_{LOADED_VERSION}-episode_{EPISODE}"
+VISION_RANGE = 10
+KNOW_EXIT = True
 
 #domain definiton
 REAL_W = 20 #in metres
@@ -94,95 +95,11 @@ w.create_rectangle_hole(0, REAL_H*(2/3), REAL_W/3, REAL_H) # Bottom left Wall
 #map_first_half = (REAL_W * (1/4))/0.4
 
 
-ped_init_data = init_condition(lambda x, y: w.is_cell_free(x, y))
-w.add_pedestrians(ped_init_data)
+w.ped_init_data = init_condition(lambda x, y: w.is_cell_free(x, y))
+w.add_pedestrians(w.ped_init_data)
 
 
 
 w.prepare_world()
 
-# Přidaný kód #####################################
-# Mapa ze které se budou vytahovat data pro učení.
-# Vytvoří bázi s boundaries, které se nemění.
-learning_map = lern.LearningMap(w_width, w_height)
-for boundary in w._boundary:
-    learning_map.add_boundary(boundary.x, boundary.y, boundary.btype)
-for hole in w._holes:
-    learning_map.add_boundary(hole.x, hole.y)
-learning_map.reset_map()
-
-learning_map.save_version_info(FILE_NAME, VERSION, IS_LEARNING, w.pedestrian_count)
-
-###################################################
-
-# Použit k vytvoření obrazu 
-wvisu = WorldVisualisator(w)
-images = []
-im = wvisu.DrawWorld(size = (im_width,im_width//hw_factor))
-im.save(FILE_NAME + '0.png')
-
-images.append(im) #dej tam obrazek c 0
-
-if not IS_LEARNING:
-    learning_map.model.set_weights(learning_map.load_model(LOADED_MODEL))
-
-
-for step in range(2001):
-    print("step: " + str(step))
-
-    minfo = w.move(learning_map, IS_LEARNING)  #  proměnná pedestrians je použita pro strojové učení
-    #print(minfo)
-    
-
-    if IS_LEARNING and (learning_map.episode_step_count >= learning_map.max_steps_per_episode):
-        # update the the target network with new weights
-        learning_map.model_target.set_weights(learning_map.model.get_weights())
-        # Log details
-        template = "running reward: {:.2f} at episode {}, frame count {}"
-        print(template.format(learning_map.running_reward, learning_map.episode_count, learning_map.frame_count))
-
-        learning_map.episode_step_count = 0
-        learning_map.episode_reward_history.append(learning_map.episode_reward)
-        learning_map.running_reward = np.mean(learning_map.episode_reward)
-        learning_map.episode_reward = []
-        
-        learning_map.save_model(f"version_{VERSION}-episode_{learning_map.episode_count}")
-        learning_map.episode_count += 1
-
-    learning_map.reset_map()
-
-    imped = wvisu.DrawWorld(size=(im_width, im_width // hw_factor))
-    images.append(imped)
-    imped.save(FILE_NAME + f'steps/img-version-{VERSION}-step-{step}.png')
-
-    if step % 100 == 0:
-        #for item in sorted(minfo, key = minfo.get):
-        #    print(f'{item}:-> {minfo[item]}')
-        images[0].save(FILE_NAME + f'img-version-{VERSION}-step-{step}.gif',
-                       save_all=True,
-                       append_images=images[1:],
-                       duration=200,
-                       loop=0)
-        images = []
-        if step % 2000 == 0 and False: # Ponecháno, v případě, že by jsem v budoucnu chtěl upravit
-            w.remove_pedestrians()
-            w.add_pedestrians(init_condition(lambda x, y: x <= 20 / 0.4, rho=1))
-    #print(w.pedestrian_count)
-    if w.pedestrian_count == 0:
-        if not IS_LEARNING:
-            print("end")
-            break
-        w.remove_pedestrians()
-        w.add_pedestrians(ped_init_data)
-        print("added pedestrians")
-        w.prepare_world()
-        learning_map.reset_map()
-
-
-
-
-
-
-#learning_map.save_data("learningdata")
-#learning_map.save_model(f"version-{VERSION}")
-print('done')
+model_simulate(FILE_NAME, VERSION, EPISODE, IS_LEARNING, SAVE_MODEL, VISION_RANGE, KNOW_EXIT, w_height, w_width,  w, im_width, hw_factor, LOADED_MODEL)

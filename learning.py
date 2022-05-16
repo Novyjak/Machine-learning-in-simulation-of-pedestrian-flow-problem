@@ -23,15 +23,10 @@ class CellType(IntEnum):
     BTYPE = 2  # boundary cell
     ETYPE = 3  # empty cell
     OTYPE = 4  # out cell
-    
-
-VISION_RANGE = 10
-OBSERVATION_SPACE = (2*VISION_RANGE +1, 2*VISION_RANGE +1, 1)
-KNOW_EXIT = True
 
 
 class LearningMap:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, VISION_RANGE: int, KNOW_EXIT: bool):
         self._width = width
         self._height = height
         self._mapItemsBase = np.full((width,height), self.add_ct(CellType.ETYPE))  # Pro uložení stěn a východů, které se němění
@@ -71,15 +66,20 @@ class LearningMap:
         # Number of frames for exploration
         self.epsilon_greedy_frames = 1000.0
 
+        self.OBSERVATION_SPACE = (2*VISION_RANGE +1, 2*VISION_RANGE +1, 1)
+        self.VISION_RANGE = VISION_RANGE
+        self.KNOW_EXIT = KNOW_EXIT
+
         self.model = self.create_q_model()
         self.model_target = self.create_q_model()
         self.model_target.set_weights(self.model.get_weights())
+
 
     def create_q_model(self):
 
         num_actions = 9
         # Network defined by the Deepmind paper
-        inputs = layers.Input(shape=OBSERVATION_SPACE)
+        inputs = layers.Input(shape=self.OBSERVATION_SPACE)
 
         # Convolutions on the frames on the screen
         convlayer1 = layers.Conv2D(32, 2, activation="relu")(inputs)
@@ -100,8 +100,8 @@ class LearningMap:
 
 
     def ped_state(self, ped_x, ped_y):
-        return_state = np.ones((2*VISION_RANGE+1, 2*VISION_RANGE+1))
-        offsets = list(range(-VISION_RANGE, VISION_RANGE+1))
+        return_state = np.ones((2*self.VISION_RANGE+1, 2*self.VISION_RANGE+1))
+        offsets = list(range(-self.VISION_RANGE, self.VISION_RANGE+1))
         out_closest = self._outBoundaries[0]
         out_len = self.compute_pythagoras(ped_x, ped_y, out_closest[0], out_closest[1])
 
@@ -130,8 +130,8 @@ class LearningMap:
         return return_state
 
     def ped_future_state(self, ped_x, ped_y):
-        return_state = np.ones((2*VISION_RANGE+1, 2*VISION_RANGE+1))
-        offsets = list(range(-VISION_RANGE, VISION_RANGE+1))
+        return_state = np.ones((2*self.VISION_RANGE+1, 2*self.VISION_RANGE+1))
+        offsets = list(range(-self.VISION_RANGE, self.VISION_RANGE+1))
         out_closest = self._outBoundaries[0]
         out_len = self.compute_pythagoras(ped_x, ped_y, out_closest[0], out_closest[1])
 
@@ -170,7 +170,7 @@ class LearningMap:
         elif self._mapItems[choice_x, choice_y] == self.add_ct(CellType.PTYPE):
             return -100  # Pokud narazí do chodce
         elif self._mapItems[choice_x, choice_y] == self.add_ct(CellType.ETYPE):
-            if KNOW_EXIT: # Jestli chodci ví, jakým směrem je východ
+            if self.KNOW_EXIT: # Jestli chodci ví, jakým směrem je východ
                 out_closest = self._outBoundaries[0]
                 out_len = self.compute_pythagoras(ped_x, ped_y, out_closest[0], out_closest[1])
                 for item in self._outBoundaries:
@@ -235,8 +235,8 @@ class LearningMap:
         tmpDict = {
             'version': version,
             'is_learning': is_learning,
-            'vision_range': VISION_RANGE,
-            'know_exit': KNOW_EXIT,
+            'vision_range': self.VISION_RANGE,
+            'know_exit': self.KNOW_EXIT,
             'ped_number': ped_number,
             'gamma': self.gamma,
             'min_epsilon': self.epsilon_min,
