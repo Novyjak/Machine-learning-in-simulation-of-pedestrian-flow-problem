@@ -10,7 +10,6 @@ from keras import backend as K
 from keras.models import Sequential
 from keras.callbacks import TensorBoard
 from tensorflow.keras.optimizers import Adam
-from collections import deque
 from datetime import date
 
 

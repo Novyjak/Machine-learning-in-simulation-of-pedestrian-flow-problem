@@ -2,7 +2,6 @@ from typing import Iterable
 from enum import IntEnum
 import numpy as np
 import worlditems as wi
-import scipy.signal as signal
 import math
 import random
 #from worlditems import WorldItem,BoundaryItem, BoundaryType
